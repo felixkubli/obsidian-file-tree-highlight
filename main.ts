@@ -2,16 +2,16 @@ import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Set
 
 // Remember to rename these classes and interfaces!
 
-interface MyPluginSettings {
+interface FileTreeHighlightSettings {
 	mySetting: string;
 }
 
-const DEFAULT_SETTINGS: MyPluginSettings = {
-	mySetting: 'default'
+const DEFAULT_SETTINGS: FileTreeHighlightSettings = {
+	mySetting: 'useHex'
 }
 
-export default class FolderHighlight extends Plugin {
-	settings: MyPluginSettings;
+export default class FileTreeHighlight extends Plugin {
+	settings: FileTreeHighlightSettings;
 
 	async onload() {
 		await this.loadSettings();
@@ -40,7 +40,7 @@ export default class FolderHighlight extends Plugin {
 		this.addCommand({
 			id: 'sample-editor-command',
 			name: 'Sample editor command',
-			editorCallback: (editor: Editor, view: MarkdownView) => {
+			editorCallback: (editor: Editor, _: MarkdownView) => {
 				console.log(editor.getSelection());
 				editor.replaceSelection('Sample Editor Command');
 			}
@@ -66,7 +66,7 @@ export default class FolderHighlight extends Plugin {
 		});
 
 		// This adds a settings tab so the user can configure various aspects of the plugin
-		this.addSettingTab(new SampleSettingTab(this.app, this));
+		this.addSettingTab(new FileTreeHighlightSettingTab(this.app, this));
 
 		// If the plugin hooks up any global DOM events (on parts of the app that doesn't belong to this plugin)
 		// Using this function will automatically remove the event listener when this plugin is disabled.
@@ -107,10 +107,10 @@ class SampleModal extends Modal {
 	}
 }
 
-class SampleSettingTab extends PluginSettingTab {
-	plugin: FolderHighlight;
+class FileTreeHighlightSettingTab extends PluginSettingTab {
+	plugin: FileTreeHighlight;
 
-	constructor(app: App, plugin: FolderHighlight) {
+	constructor(app: App, plugin: FileTreeHighlight) {
 		super(app, plugin);
 		this.plugin = plugin;
 	}
