@@ -1,11 +1,10 @@
 {
-	"id": "folder-highlight-obsidian",
-	"name": "Folder Highlight",
+	"id": "file-tree-highlight",
+	"name": "File Tree Highlight",
 	"version": "1.0.0",
 	"minAppVersion": "0.15.0",
-	"description": "This is an Obsidian plugin for highlighting folders in the file tree",
-	"author": "Felix Kubli",
+	"description": "This is a Plugin for Obsidian, that enables the user to highlight the files and folders in the desired color",
+	"author": "fek",
 	"authorUrl": "",
 	"isDesktopOnly": false
 }
-
