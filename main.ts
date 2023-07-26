@@ -1,7 +1,13 @@
 import { App, Modal, Plugin, PluginSettingTab, Setting, TAbstractFile } from 'obsidian';
 
-// Remember to rename these classes and interfaces!
-
+interface HighlightingOption {
+	dataPath: string,
+	backgroundColor: string,
+	color: string
+}
+interface HighlightingOptions {
+	[dataPath: string]: HighlightingOption
+}
 interface FileTreeHighlightSettings {
 	mySetting: string;
 	highlightingOptions: HighlightingOptions;
@@ -13,26 +19,11 @@ const DEFAULT_SETTINGS: FileTreeHighlightSettings = {
 };
 
 
-interface HighlightingOption {
-	dataPath: string,
-	backgroundColor: string,
-	color: string
-}
-interface HighlightingOptions {
-	[dataPath: string]: HighlightingOption
-}
-
 function highlightElement(opt: HighlightingOption) {
 	let element: HTMLElement | null = document.querySelector(`div[data-path="${opt.dataPath}"]`);
 	if (element) {
 		element.style.backgroundColor = opt.backgroundColor;
 		element.style.color = opt.color;
-	}
-}
-
-function applyHighlightingOptions(highlightingOptions: HighlightingOptions) {
-	for (const [_, value] of Object.entries(highlightingOptions)) {
-		highlightElement(value);
 	}
 }
 
@@ -43,11 +34,8 @@ export default class FileTreeHighlight extends Plugin {
 	async onload() {
 		await this.loadSettings();
 
-		applyHighlightingOptions(this.settings.highlightingOptions);
-
 		this.registerEvent(
 			this.app.workspace.on("file-menu", (menu, file) => {
-				console.log(file);
 				menu.addItem((item) => {
 					item.setTitle("edit highlighting options")
 						.setIcon("palette")
@@ -61,14 +49,23 @@ export default class FileTreeHighlight extends Plugin {
 			})
 		);
 
-		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new FileTreeHighlightSettingTab(this.app, this));
 	}
 
-	onunload() { }
+	onunload() { 
+		for (const value of Object.values(this.settings.highlightingOptions)) {
+			let opt = {} as HighlightingOption;
+			opt.dataPath = value.dataPath;
+			highlightElement(opt);
+		}
+	}
+
 
 	async loadSettings() {
 		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+		for (const [_, value] of Object.entries(this.settings.highlightingOptions)) {
+			highlightElement(value);
+		}
 	}
 
 	async saveSettings() {
@@ -142,7 +139,7 @@ class FileTreeHighlightSettingTab extends PluginSettingTab {
 
 		containerEl.empty();
 
-		containerEl.createEl('h2', {text: 'Settings for my awesome plugin.'});
+		containerEl.createEl('h2', {text: 'Settings of the file tree highlight plugin.'});
 
 		new Setting(containerEl)
 			.setName('Setting #1')
@@ -157,3 +154,4 @@ class FileTreeHighlightSettingTab extends PluginSettingTab {
 				}));
 	}
 }
+
