@@ -1,14 +1,41 @@
-import { App, Modal, Plugin, PluginSettingTab, Setting, TFile } from 'obsidian';
+import { App, Modal, Plugin, PluginSettingTab, Setting, TAbstractFile } from 'obsidian';
 
 // Remember to rename these classes and interfaces!
 
 interface FileTreeHighlightSettings {
 	mySetting: string;
+	highlightingOptions: HighlightingOptions;
 }
 
 const DEFAULT_SETTINGS: FileTreeHighlightSettings = {
-	mySetting: 'useHex'
+	mySetting: 'useHex',
+	highlightingOptions: {}
+};
+
+
+interface HighlightingOption {
+	dataPath: string,
+	backgroundColor: string,
+	color: string
 }
+interface HighlightingOptions {
+	[dataPath: string]: HighlightingOption
+}
+
+function highlightElement(opt: HighlightingOption) {
+	let element: HTMLElement | null = document.querySelector(`div[data-path="${opt.dataPath}"]`);
+	if (element) {
+		element.style.backgroundColor = opt.backgroundColor;
+		element.style.color = opt.color;
+	}
+}
+
+function applyHighlightingOptions(highlightingOptions: HighlightingOptions) {
+	for (const [_, value] of Object.entries(highlightingOptions)) {
+		highlightElement(value);
+	}
+}
+
 
 export default class FileTreeHighlight extends Plugin {
 	settings: FileTreeHighlightSettings;
@@ -16,54 +43,29 @@ export default class FileTreeHighlight extends Plugin {
 	async onload() {
 		await this.loadSettings();
 
-		this.addCommand({
-			id: 'open-sample-modal-color-setter',
-			name: 'edit background color',
-			callback: () => {
-				new ColorEditorModal(this.app, opts => console.log(opts)).open();
-			}
-		});
+		applyHighlightingOptions(this.settings.highlightingOptions);
+
 		this.registerEvent(
 			this.app.workspace.on("file-menu", (menu, file) => {
 				console.log(file);
 				menu.addItem((item) => {
-					item
-						.setTitle("edit highlighting options")
+					item.setTitle("edit highlighting options")
 						.setIcon("palette")
 						.onClick(async () => {
-							new ColorEditorModal(this.app, opts => console.log(opts)).open();
-					});
+							new ColorEditorModal(this.app, file, opts => {
+								this.settings.highlightingOptions[opts.dataPath] = opts;
+								highlightElement(opts);
+							}).open();
+						});
 				});
 			})
 		);
-
-		// This adds a complex command that can check whether the current state of the app allows execution of the command
-		// this.addCommand({
-		// 	id: 'open-sample-modal-complex',
-		// 	name: 'Open sample modal (complex)',
-		// 	checkCallback: (checking: boolean) => {
-		// 		// Conditions to check
-		// 		const markdownView = this.app.workspace.getActiveViewOfType(MarkdownView);
-		// 		if (markdownView) {
-		// 			// If checking is true, we're simply "checking" if the command can be run.
-		// 			// If checking is false, then we want to actually perform the operation.
-		// 			if (!checking) {
-		// 				new SampleModal(this.app).open();
-		// 			}
-
-		// 			// This command will only show up in Command Palette when the check function returns true
-		// 			return true;
-		// 		}
-		// 	}
-		// });
 
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new FileTreeHighlightSettingTab(this.app, this));
 	}
 
-	onunload() {
-
-	}
+	onunload() { }
 
 	async loadSettings() {
 		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
@@ -74,23 +76,20 @@ export default class FileTreeHighlight extends Plugin {
 	}
 }
 
-interface HighlightingOption {
-	backgroundColor: string
-}
-
 class ColorEditorModal extends Modal {
 	result: HighlightingOption
 	onSubmit: (result?: HighlightingOption) => void
 
-	constructor(app: App, onSubmit: (result?: HighlightingOption) => void) {
+	constructor(app: App, file: TAbstractFile, onSubmit: (result: HighlightingOption) => void) {
 		super(app);
-		this.result = { backgroundColor: '' };
+		this.result = {} as HighlightingOption;
+		this.result.dataPath = file.path;
 		this.onSubmit = onSubmit;
 	}
 	onOpen() {
 		const {contentEl} = this;
 		contentEl.setText('Edit the background color');
-		contentEl.createEl("h1", { text: "What's your name?" });
+		contentEl.createEl("h1", { text: "Choose your desired colors" });
 
 		new Setting(contentEl)
 			.setName("Background Color")
@@ -107,7 +106,9 @@ class ColorEditorModal extends Modal {
 				  .setCta()
 				  .onClick(() => {
 					this.close();
-					this.onSubmit(undefined);
+					this.result.color = '';
+					this.result.backgroundColor = '';
+					this.onSubmit(this.result);
 				  })
 			)
 			.addButton(btn =>
