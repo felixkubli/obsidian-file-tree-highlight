@@ -1,4 +1,4 @@
-import { App, Modal, Plugin, PluginSettingTab, Setting, TAbstractFile } from 'obsidian';
+import { App, Modal, Plugin, PluginSettingTab, Setting } from 'obsidian';
 
 interface HighlightingOption {
 	dataPath: string,
@@ -40,9 +40,15 @@ export default class FileTreeHighlight extends Plugin {
 					item.setTitle("edit highlighting options")
 						.setIcon("palette")
 						.onClick(async () => {
-							new ColorEditorModal(this.app, file, opts => {
+							let oldOpt: HighlightingOption = this.settings.highlightingOptions[file.path];
+							if (oldOpt === undefined) {
+								oldOpt = {} as HighlightingOption;
+								oldOpt.dataPath = file.path;
+							}
+							new ColorEditorModal(this.app, oldOpt, opts => {
 								this.settings.highlightingOptions[opts.dataPath] = opts;
 								highlightElement(opts);
+								this.saveSettings();
 							}).open();
 						});
 				});
@@ -55,6 +61,8 @@ export default class FileTreeHighlight extends Plugin {
 	onunload() { 
 		for (const value of Object.values(this.settings.highlightingOptions)) {
 			let opt = {} as HighlightingOption;
+			opt.backgroundColor = '';
+			opt.color = '';
 			opt.dataPath = value.dataPath;
 			highlightElement(opt);
 		}
@@ -63,7 +71,7 @@ export default class FileTreeHighlight extends Plugin {
 
 	async loadSettings() {
 		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
-		for (const [_, value] of Object.entries(this.settings.highlightingOptions)) {
+		for (const value of Object.values(this.settings.highlightingOptions)) {
 			highlightElement(value);
 		}
 	}
@@ -77,10 +85,9 @@ class ColorEditorModal extends Modal {
 	result: HighlightingOption
 	onSubmit: (result?: HighlightingOption) => void
 
-	constructor(app: App, file: TAbstractFile, onSubmit: (result: HighlightingOption) => void) {
+	constructor(app: App, opt: HighlightingOption, onSubmit: (result: HighlightingOption) => void) {
 		super(app);
-		this.result = {} as HighlightingOption;
-		this.result.dataPath = file.path;
+		this.result = opt;
 		this.onSubmit = onSubmit;
 	}
 	onOpen() {
@@ -90,11 +97,32 @@ class ColorEditorModal extends Modal {
 
 		new Setting(contentEl)
 			.setName("Background Color")
-			.addText((text) =>
+			.addText(text => {
+				text.setValue(this.result.backgroundColor);
 				text.onChange((value: string) => {
-					this.result.backgroundColor = value;
-				})
-			);
+					this.result.backgroundColor = value; 
+				});
+			})
+			.addColorPicker(colorComponent => {
+				colorComponent.setValue(this.result.backgroundColor);
+				colorComponent.onChange(color => {
+					this.result.backgroundColor = color;
+				});
+			});
+		new Setting(contentEl)
+			.setName("Text Color")
+			.addText(text => {
+				text.setValue(this.result.color);
+				text.onChange((value: string) => {
+					this.result.color = value;
+				});
+			})
+			.addColorPicker(colorComponent => {
+				colorComponent.setValue(this.result.color);
+				colorComponent.onChange(color => {
+					this.result.color = color;
+				});
+			});
 
 		new Setting(contentEl)
 			.addButton(btn =>
