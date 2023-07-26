@@ -1,4 +1,4 @@
-import { App, Modal, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import { App, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
 
 interface HighlightingOption {
 	dataPath: string,
@@ -56,6 +56,14 @@ export default class FileTreeHighlight extends Plugin {
 		);
 
 		this.addSettingTab(new FileTreeHighlightSettingTab(this.app, this));
+
+		this.app.workspace.onLayoutReady(() => {
+			setTimeout(() => {
+				for (const value of Object.values(this.settings.highlightingOptions)) {
+					highlightElement(value);
+				}
+			}, 1000)
+		});
 	}
 
 	onunload() { 
@@ -71,9 +79,6 @@ export default class FileTreeHighlight extends Plugin {
 
 	async loadSettings() {
 		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
-		for (const value of Object.values(this.settings.highlightingOptions)) {
-			highlightElement(value);
-		}
 	}
 
 	async saveSettings() {
