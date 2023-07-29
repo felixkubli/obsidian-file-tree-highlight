@@ -1,4 +1,6 @@
 
+// TODO: create list of all nav tree items, track active through on click, and set colors accordingly
+
 export interface HighlightingOption {
 	dataPath: string,
 	backgroundColor: string,
