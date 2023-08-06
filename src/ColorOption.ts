@@ -1,9 +1,10 @@
 
-interface Dict<T> {
-  [key: string]: T
-}
-
 const BUTTON_SELECTED_CLASS = 'color-button-selected';
+
+interface ColorButton {
+  color: string,
+  element: HTMLElement
+}
 
 export default class ColorOption {
   nameEl: HTMLElement;
@@ -11,20 +12,20 @@ export default class ColorOption {
 	changeFn?: (color: string) => void;
 	options: string[];
 	selectedOption: string;
-  optionButtons: Dict<HTMLElement> = {} as Dict<HTMLElement>;
+  optionButtons: ColorButton[] = []
 
 	constructor(containerEl: HTMLElement, options: string[]) {
 		this.containerEl = containerEl;
 		this.options = options;
 
-    this.nameEl = this.containerEl.createEl('p', { 'text': 'Color Option' });
+    this.nameEl = this.containerEl.createEl('h3', { 'text': 'Color Option' });
 		this.createOptionEls();
 	}
 
 	private createOptionEls() {
 		for (const option of this.options) {
 			let optionEl = this.createOptionButton(option);
-      this.optionButtons[option] = optionEl;
+      this.optionButtons.push({ color: option, element: optionEl })
 
 			optionEl.onclick = () => {
         if (option === this.selectedOption) return;
@@ -37,10 +38,10 @@ export default class ColorOption {
 			}
 		}
 
-    let firstEl = Object.entries<HTMLElement>(this.optionButtons).first();
+    let firstEl = this.optionButtons[0];
     if (firstEl) {
-      this.selectedOption = firstEl[0];
-      firstEl[1].addClass(BUTTON_SELECTED_CLASS);
+      this.selectedOption = firstEl.color;
+      firstEl.element.addClass(BUTTON_SELECTED_CLASS);
     }
 	}
 
@@ -58,8 +59,10 @@ export default class ColorOption {
     const oldColor = this.selectedOption;
     this.selectedOption = color;
 
-    this.optionButtons[oldColor].removeClass(BUTTON_SELECTED_CLASS)
-    this.optionButtons[this.selectedOption].addClass(BUTTON_SELECTED_CLASS)
+    const oldIdx = this.optionButtons.findIndex(x => x.color === oldColor);
+    const newIdx = this.optionButtons.findIndex(x => x.color === color);
+    this.optionButtons[oldIdx].element.removeClass(BUTTON_SELECTED_CLASS);
+    this.optionButtons[newIdx].element.addClass(BUTTON_SELECTED_CLASS);
   }
 
 	setName(name: string) {
