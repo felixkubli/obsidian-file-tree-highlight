@@ -6,7 +6,7 @@ This is a plugin for coloring elements in the file tree of Obsidian (https://obs
 
 Copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/obsidian-file-tree-highlight/`.
 
-Alternaivly, clone this repository in the vault directory mentioned above.
+Alternatively, clone this repository in the vault directory mentioned above.
 
 ## Usage
 
@@ -23,6 +23,10 @@ Alternaivly, clone this repository in the vault directory mentioned above.
 1. Right-click the colored file tree element.
 2. Click on the option "edit highlighting options".
 3. Click on "Remove Element Settings".
+
+### Change Selectable Colors
+
+1. Go to the settings of this plugin. Click on the Color you want to change, then a color picker will be opened.
 
 ## Known bugs / missing features
 
