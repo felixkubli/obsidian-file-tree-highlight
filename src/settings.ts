@@ -14,18 +14,27 @@ export const DEFAULT_SETTINGS: FileTreeHighlightSettings = {
 	backgroundColors: [
 		"#AEE2FF",
 		"#93C6E7",
-		"#FEDEFF"
+		"#FEDEFF",
+    "#FFFFFF",
+    "#FFFFFF",
+    "#FFFFFF",
+    "#FFFFFF",
 	],
 	fontColors: [
 		"#0e1316",
-		"#0e1316",
-		"#0e1316",
+		"#0e1317",
+		"#0e1318",
+    "#FFFFFF",
+    "#FFFFFF",
+    "#FFFFFF",
+    "#FFFFFF",
 	],
 	highlightingOptions: {}
 };
 
 export class FileTreeHighlightSettingTab extends PluginSettingTab {
 	plugin: FileTreeHighlight;
+  numberOfColors = 7;
 
 	constructor(app: App, plugin: FileTreeHighlight) {
 		super(app, plugin);
@@ -40,57 +49,29 @@ export class FileTreeHighlightSettingTab extends PluginSettingTab {
 		containerEl.createEl('h2', {text: 'Settings of the file tree highlight plugin'});
 
 		containerEl.createEl('h3', {text: 'Select your favourite background colors'})
-		new Setting(containerEl)
-			.setName("1. background color")
-			.addColorPicker(colorComponent => {
-				colorComponent.setValue(this.plugin.settings.backgroundColors[0]);
+		let backgroundSettings = new Setting(containerEl)
+			.setName("background colors");
+    for(let i=0; i < this.numberOfColors; i++) {
+      backgroundSettings.addColorPicker(colorComponent => {
+				colorComponent.setValue(this.plugin.settings.backgroundColors[i]);
 				colorComponent.onChange(color => {
 					console.log(color)
-					this.plugin.settings.backgroundColors[0] = color;
+					this.plugin.settings.backgroundColors[i] = color;
 				});
 			});
-		new Setting(containerEl)
-			.setName("2. background color")
-			.addColorPicker(colorComponent => {
-				colorComponent.setValue(this.plugin.settings.backgroundColors[1]);
-				colorComponent.onChange(color => {
-					this.plugin.settings.backgroundColors[1] = color;
-				});
-			});
-		new Setting(containerEl)
-			.setName("3. background color")
-			.addColorPicker(colorComponent => {
-				colorComponent.setValue(this.plugin.settings.backgroundColors[2]);
-				colorComponent.onChange(color => {
-					this.plugin.settings.backgroundColors[2] = color;
-				});
-			});
+    }
 
-		containerEl.createEl('h3', {text: 'Select your favourite background colors'})
-		new Setting(containerEl)
-			.setName("1. font color")
-			.addColorPicker(colorComponent => {
-				colorComponent.setValue(this.plugin.settings.fontColors[0]);
+		containerEl.createEl('h3', {text: 'Select your favourite font colors'})
+		let fontSettings = new Setting(containerEl)
+			.setName("font colors");
+    for(let i=0; i < this.numberOfColors; i++) {
+      fontSettings.addColorPicker(colorComponent => {
+				colorComponent.setValue(this.plugin.settings.fontColors[i]);
 				colorComponent.onChange(color => {
-					this.plugin.settings.fontColors[0] = color;
+					this.plugin.settings.fontColors[i] = color;
 				});
 			});
-		new Setting(containerEl)
-			.setName("2. font color")
-			.addColorPicker(colorComponent => {
-				colorComponent.setValue(this.plugin.settings.fontColors[1]);
-				colorComponent.onChange(color => {
-					this.plugin.settings.fontColors[1] = color;
-				});
-			});
-		new Setting(containerEl)
-			.setName("3. font color")
-			.addColorPicker(colorComponent => {
-				colorComponent.setValue(this.plugin.settings.fontColors[2]);
-				colorComponent.onChange(color => {
-					this.plugin.settings.fontColors[2] = color;
-				});
-			});
+    }
 	}
 }
 

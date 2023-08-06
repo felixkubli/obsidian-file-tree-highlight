@@ -21,7 +21,7 @@ export default class FileTreeHighlight extends Plugin {
 								oldOpt = {} as HighlightingOption;
 								oldOpt.dataPath = file.path;
 							}
-							new ColorEditorModal(this.app, oldOpt, opts => {
+							new ColorEditorModal(this.app, this.settings, oldOpt, opts => {
 								this.settings.highlightingOptions[opts.dataPath] = opts;
 								highlightElement(opts);
 								this.saveSettings();
