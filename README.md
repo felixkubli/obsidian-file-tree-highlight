@@ -2,6 +2,8 @@
 
 This is a plugin for coloring elements in the file tree of Obsidian (https://obsidian.md).
 
+This plugin is still in early development and is provided as is, without any warranty.
+
 ## Manually installing the plugin
 
 Copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/obsidian-file-tree-highlight/`.
