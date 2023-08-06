@@ -1,4 +1,5 @@
 import { App, Modal, Setting } from 'obsidian';
+import ColorOption from './ColorOption';
 import { getEmptyHighlightingOption, HighlightingOption } from './highlighting';
 
 export class ColorEditorModal extends Modal {
@@ -15,19 +16,14 @@ export class ColorEditorModal extends Modal {
 		contentEl.setText('Edit the background color');
 		contentEl.createEl("h1", { text: "Choose your desired colors" });
 
+		const options = ["12345", 'asdf', 'dkfsdsfsd']
+		new ColorOption(contentEl, options)
+			.setName("Background Color")
+			.setValue(options[0])
+			.onChange(color => console.log(color));
 		new Setting(contentEl)
 			.setName("Background Color")
-			.addText(text => {
-				text.setValue(this.result.backgroundColor);
-				text.onChange((value: string) => {
-					this.result.backgroundColor = value; 
-				});
-			})
-			.addColorPicker(colorComponent => {
-				colorComponent.setValue(this.result.backgroundColor);
-				colorComponent.onChange(color => {
-					this.result.backgroundColor = color;
-				});
+			.addDropdown(component => {
 			});
 		new Setting(contentEl)
 			.setName("Text Color")
