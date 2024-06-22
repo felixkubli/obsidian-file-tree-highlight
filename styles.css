@@ -8,14 +8,13 @@ If your plugin does not need CSS, delete this file.
 */
 
 .color-button {
-  margin: 0.5rem;
-  color: black;
-  border-radius: 50%;
-  width: 2.5rem;
-  height: 2.5rem;
+	margin: 0.5rem;
+	color: black;
+	border-radius: 50%;
+	width: 2.5rem;
+	height: 2.5rem;
 }
 
 .color-button-selected {
-  border: solid .3rem var(--color-purple);
+	border: solid 0.3rem var(--color-purple);
 }
-

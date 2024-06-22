@@ -30,13 +30,13 @@ Alternatively, clone this repository in the vault directory mentioned above.
 
 ## Known bugs / missing features
 
-- In obsidian, the active file will have a lighter color in the file tree. This behaviour is not supported at the moment.
+-   In obsidian, the active file will have a lighter color in the file tree. This behaviour is not supported at the moment.
 
 ## Development
 
-- Clone this repo.
-- `npm i` or `yarn` to install dependencies
-- `npm run dev` to start compilation in watch mode.
+-   Clone this repo.
+-   `npm i` or `yarn` to install dependencies
+-   `npm run dev` to start compilation in watch mode.
 
 This project uses Typescript to provide type checking and documentation.
 The repo depends on the latest plugin API (obsidian.d.ts) in Typescript Definition format.
@@ -44,4 +44,3 @@ The repo depends on the latest plugin API (obsidian.d.ts) in Typescript Definiti
 ### API Documentation
 
 See https://github.com/obsidianmd/obsidian-api
-
